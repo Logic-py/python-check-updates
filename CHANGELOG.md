@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Five built-in color schemes for table output, selectable and persisted per user:
   - `default` - GitHub-style SemVer severity (`#D73A49` / `#0366D6` / `#28A745`)
-  - `okabe-ito` - Color-blind safe Okabe–Ito palette (`#E69F00` / `#0072B2` / `#009E73`)
+  - `okabe-ito` - Color-blind safe Okabe-Ito palette (`#E69F00` / `#0072B2` / `#009E73`)
   - `traffic-light` - Classic red/yellow/green (`#E74C3C` / `#F1C40F` / `#2ECC71`)
   - `severity` - Monitoring/observability style (`#8E44AD` / `#3498DB` / `#95A5A6`)
   - `high-contrast` - Maximum distinction, color-blind safe (`#CC79A7` / `#0072B2` / `#F0E442`)
