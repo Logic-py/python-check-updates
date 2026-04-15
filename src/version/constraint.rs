@@ -176,6 +176,15 @@ mod tests {
         assert_eq!(extract_base_version(""), None);
         assert_eq!(extract_base_version(">=1.0,<2.0"), Some("1.0".to_string()));
         assert_eq!(extract_base_version("~7.3.0"), Some("7.3.0".to_string()));
+        // 4-component (pandas-stubs style)
+        assert_eq!(
+            extract_base_version(">=3.0.0.250204"),
+            Some("3.0.0.250204".to_string())
+        );
+        assert_eq!(
+            extract_base_version("==3.0.0.260204"),
+            Some("3.0.0.260204".to_string())
+        );
     }
 
     #[test]
@@ -194,6 +203,15 @@ mod tests {
         assert_eq!(update_constraint("^1.10.0", "2.6.0"), "^2.6.0");
         assert_eq!(update_constraint("0.1.6", "0.3.0"), "0.3.0");
         assert_eq!(update_constraint("*", "1.0.0"), "*");
+        // 4-component new version (pandas-stubs style)
+        assert_eq!(
+            update_constraint(">=3.0.0", "3.0.0.260204"),
+            ">=3.0.0.260204"
+        );
+        assert_eq!(
+            update_constraint(">=3.0.0.250204", "3.0.0.260204"),
+            ">=3.0.0.260204"
+        );
     }
 
     #[test]

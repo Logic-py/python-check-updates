@@ -172,6 +172,18 @@ mod tests {
     }
 
     #[test]
+    fn test_is_newer_four_component() {
+        // pandas-stubs style: 3.0.0.260204 is newer than 3.0.0
+        assert!(is_newer("3.0.0.260204", "3.0.0"));
+        // and newer than a prior 4-component release
+        assert!(is_newer("3.0.0.260204", "3.0.0.250204"));
+        // same 4-component version is not newer
+        assert!(!is_newer("3.0.0.260204", "3.0.0.260204"));
+        // older 4-component is not newer than current
+        assert!(!is_newer("3.0.0.250204", "3.0.0.260204"));
+    }
+
+    #[test]
     fn test_classify_bump_major() {
         assert_eq!(classify_bump("1.0.0", "2.0.0"), BumpKind::Major);
         assert_eq!(classify_bump("0.7.3", "1.0.0"), BumpKind::Major);
@@ -188,6 +200,64 @@ mod tests {
     fn test_classify_bump_patch() {
         assert_eq!(classify_bump("1.0.0", "1.0.1"), BumpKind::Patch);
         assert_eq!(classify_bump("7.3.0", "7.3.1"), BumpKind::Patch);
+        // 4-component versions (e.g. pandas-stubs 3.0.0 → 3.0.0.260204)
+        assert_eq!(classify_bump("3.0.0", "3.0.0.260204"), BumpKind::Patch);
+        assert_eq!(
+            classify_bump("3.0.0.250204", "3.0.0.260204"),
+            BumpKind::Patch
+        );
+    }
+
+    #[tokio::test]
+    async fn test_check_dep_four_component_update() {
+        // pandas-stubs pattern: current >=3.0.0, latest 3.0.0.260204
+        use wiremock::matchers::{method, path};
+        use wiremock::{Mock, MockServer, ResponseTemplate};
+
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/pypi/pandas-stubs/json"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                "info": { "version": "3.0.0.260204" }
+            })))
+            .mount(&server)
+            .await;
+
+        let client = PypiClient::with_base_url(&server.uri()).unwrap();
+        let dep = crate::parsers::Dependency {
+            name: "pandas-stubs".to_string(),
+            constraint: ">=3.0.0".to_string(),
+        };
+        let update = check_dep(&client, &dep).await.unwrap().unwrap();
+        assert_eq!(update.latest, "3.0.0.260204");
+        assert_eq!(update.bump_kind, BumpKind::Patch);
+        assert_eq!(update.updated_constraint, ">=3.0.0.260204");
+    }
+
+    #[tokio::test]
+    async fn test_check_dep_four_component_to_four_component() {
+        // pandas-stubs: current >=3.0.0.250204, latest 3.0.0.260204
+        use wiremock::matchers::{method, path};
+        use wiremock::{Mock, MockServer, ResponseTemplate};
+
+        let server = MockServer::start().await;
+        Mock::given(method("GET"))
+            .and(path("/pypi/pandas-stubs/json"))
+            .respond_with(ResponseTemplate::new(200).set_body_json(serde_json::json!({
+                "info": { "version": "3.0.0.260204" }
+            })))
+            .mount(&server)
+            .await;
+
+        let client = PypiClient::with_base_url(&server.uri()).unwrap();
+        let dep = crate::parsers::Dependency {
+            name: "pandas-stubs".to_string(),
+            constraint: ">=3.0.0.250204".to_string(),
+        };
+        let update = check_dep(&client, &dep).await.unwrap().unwrap();
+        assert_eq!(update.latest, "3.0.0.260204");
+        assert_eq!(update.bump_kind, BumpKind::Patch);
+        assert_eq!(update.updated_constraint, ">=3.0.0.260204");
     }
 
     // check_dep and find_updates - network paths covered via wiremock.
