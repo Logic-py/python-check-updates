@@ -216,7 +216,14 @@ fn color_updated_constraint(
             let colored = new_parts[2..].join(".").truecolor(r, g, b).to_string();
             format!("{}{}", plain, colored)
         }
-        _ => latest.to_string(),
+        _ => {
+            // diff is at component 3+ (e.g. pandas-stubs 3.0.0 → 3.0.0.260204)
+            // treat as patch: keep first two components plain, color the rest
+            let (r, g, b) = p.patch;
+            let plain = format!("{}.{}.", new_parts[0], new_parts[1]);
+            let colored = new_parts[2..].join(".").truecolor(r, g, b).to_string();
+            format!("{}{}", plain, colored)
+        }
     };
 
     // Append the upper bound dimmed if present
@@ -338,10 +345,27 @@ mod tests {
 
     #[test]
     fn test_color_updated_constraint_four_component_version() {
+        // 1.0.0.0 → 1.0.0.1: plain prefix "1.0." + patch-colored "0.1"
         let result =
             color_updated_constraint(">=1.0.0.0", "1.0.0.1", ">=1.0.0.1", &ColorScheme::Default);
-        assert!(result.contains("1.0.0.1"));
         assert!(result.contains(">="));
+        assert!(result.contains("1.0."));
+        assert!(result.contains("0.1"));
+    }
+
+    #[test]
+    fn test_color_updated_constraint_three_to_four_component() {
+        // pandas-stubs style: 3.0.0 → 3.0.0.260204 (new 4th component)
+        // plain prefix "3.0." + patch-colored "0.260204"
+        let result = color_updated_constraint(
+            ">=3.0.0",
+            "3.0.0.260204",
+            ">=3.0.0.260204",
+            &ColorScheme::Default,
+        );
+        assert!(result.contains(">="));
+        assert!(result.contains("3.0."));
+        assert!(result.contains("260204"));
     }
 
     #[test]
