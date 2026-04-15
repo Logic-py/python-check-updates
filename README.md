@@ -65,7 +65,7 @@ somewhere on your `PATH`.
 
 ### From source
 
-Requires [Rust](https://rustup.rs) 1.85 or later (edition 2024).
+Requires [Rust](https://rustup.rs) 1.94.1 or later (edition 2024).
 
 ```sh
 cargo install --git https://github.com/Logic-py/python-check-updates

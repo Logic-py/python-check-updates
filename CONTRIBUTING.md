@@ -4,7 +4,7 @@ Thank you for your interest in contributing to pycu!
 
 ## Prerequisites
 
-- [Rust](https://rustup.rs) **1.85 or later** (stable toolchain - edition 2024)
+- [Rust](https://rustup.rs) **1.94.1 or later** (stable toolchain - edition 2024)
 - `rustfmt` and `clippy` components:
 
   ```sh
