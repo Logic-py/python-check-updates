@@ -202,7 +202,10 @@ mod tests {
         assert_eq!(classify_bump("7.3.0", "7.3.1"), BumpKind::Patch);
         // 4-component versions (e.g. pandas-stubs 3.0.0 → 3.0.0.260204)
         assert_eq!(classify_bump("3.0.0", "3.0.0.260204"), BumpKind::Patch);
-        assert_eq!(classify_bump("3.0.0.250204", "3.0.0.260204"), BumpKind::Patch);
+        assert_eq!(
+            classify_bump("3.0.0.250204", "3.0.0.260204"),
+            BumpKind::Patch
+        );
     }
 
     #[tokio::test]
