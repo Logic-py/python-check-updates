@@ -1,8 +1,8 @@
 [package]
 name = "pycu"
-version = "1.1.7"
+version = "1.1.8"
 edition = "2024"
-rust-version = "1.94.1"
+rust-version = "1.96.0"
 description = "Check your Python dependencies for newer versions on PyPI"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/Logic-py/python-check-updates"
@@ -25,14 +25,14 @@ futures = "0.3"
 indicatif = "0.18.4"
 owo-colors = "4"
 pep440_rs = "0"
-reqwest = { version = "0.13.2", default-features = false, features = ["json", "rustls"] }
+reqwest = { version = "0.13.4", default-features = false, features = ["json", "rustls"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 sha2 = "0.11"
 tar = "0.4"
 tokio = { version = "1", features = ["rt-multi-thread", "macros"] }
 toml = "1"
-zip = { version = "8.4.0", default-features = false, features = ["deflate"] }
+zip = { version = "8.6.0", default-features = false, features = ["deflate"] }
 
 [dev-dependencies]
 tempfile = "3"
